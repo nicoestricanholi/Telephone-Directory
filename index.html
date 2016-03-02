@@ -5,7 +5,7 @@
 	<link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
 	<style>
 		.jumbotron {
-			width: 600px;
+			width: 700px;
 			margin: 20px auto;
 			text-align: center;
 			padding-left: 40px;
@@ -37,9 +37,9 @@
 		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope){
 			$scope.app = "Lista Telefonica";
 			$scope.contatos = [
-				{nome: "Pedro", telefone: "99998888", operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}},
-				{nome: "Ana", telefone: "99997777", operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}},
-				{nome: "Maria", telefone: "99996666", operadora: {nome: "Tim", codigo: 41, categoria: "Celular"}}
+				{nome: "Pedro", telefone: "99998888", operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}, data: new Date()},
+				{nome: "Ana", telefone: "99997777", operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}, data: new Date()},
+				{nome: "Maria", telefone: "99996666", operadora: {nome: "Tim", codigo: 41, categoria: "Celular"}, data: new Date()}
 			];
 			$scope.operadoras = [
 				{nome: "Oi", codigo: 14, categoria: "Celular"},
@@ -74,6 +74,7 @@
 <body ng-controller="listaTelefonicaCtrl">
 	<div class="jumbotron">
 		<h3>{{app}}</h3>
+		<input ng-model="criterioDeBusca" class="form-control" type="text" placeholder="O que você está buscando?">
 		<table ng-show="contatos.length > 0" class="table">
 			<tr>
 				<th></th>
@@ -81,13 +82,15 @@
 				<th>Telefone</th>
 				<th>Operadora</th>
 				<th>Cor</th>
+				<th>Data</th>
 			</tr>
-			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos">
+			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:'nome'">
 				<td><input type="checkbox" ng-model="contato.selecionado"></td>
 				<td>{{contato.nome | uppercase}}</td>
 				<td>{{contato.telefone}}</td>
 				<td>{{contato.operadora.nome | lowercase}}</td>
 				<td><div style="width: 20px; height: 20px;" ng-style="{'background-color': contato.cor.valor}"></div></td>
+				<td>{{contato.data | date:'dd/MM/yyyy HH:mm'}}</td>
 			</tr>
 		</table>
 		<hr/>
