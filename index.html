@@ -35,11 +35,11 @@
 	<script src="lib/angular/angular-locale_pt-br.js"></script>
 	<script>
 		angular.module("listaTelefonica", ["ngMessages"]);
-		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope){
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope, $filter, uppercaseFilter) { //Aqui pode ser usado só o $filter ou o uppercaseFilter como nos exemplos no "Pedro" e "Ana"
 			$scope.app = "Lista Telefonica";
 			$scope.contatos = [
-				{nome: "Pedro", telefone: "99998888", operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}, data: new Date()},
-				{nome: "Ana", telefone: "99997777", operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}, data: new Date()},
+				{nome: $filter('uppercase')("Pedro"), telefone: "99998888", operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}, data: new Date()},
+				{nome: uppercaseFilter("Ana"), telefone: "99997777", operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}, data: new Date()},
 				{nome: "Maria", telefone: "99996666", operadora: {nome: "Tim", codigo: 41, categoria: "Celular"}, data: new Date()}
 			];
 			$scope.operadoras = [
@@ -91,7 +91,7 @@
 			</tr>
 			<tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
 				<td><input ng-model="contato.selecionado" type="checkbox"></td>
-				<td>{{contato.nome | uppercase}}</td>
+				<td>{{contato.nome}}</td>
 				<td>{{contato.telefone}}</td>
 				<td>{{contato.operadora.nome | lowercase}}</td>
 				<td><div style="width: 20px; height: 20px;" ng-style="{'background-color': contato.cor.valor}"></div></td>
