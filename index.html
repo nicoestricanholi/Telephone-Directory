@@ -35,44 +35,60 @@
 	<script src="lib/angular/angular-locale_pt-br.js"></script>
 	<script>
 		angular.module("listaTelefonica", ["ngMessages"]);
-		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope, $filter, uppercaseFilter) { //Aqui pode ser usado só o $filter ou o uppercaseFilter como nos exemplos no "Pedro" e "Ana"
+		angular.module("listaTelefonica").controller("listaTelefonicaCtrl", function ($scope, $http, $filter) {
 			$scope.app = "Lista Telefonica";
-			$scope.contatos = [
-				{nome: $filter('uppercase')("Pedro"), telefone: "99998888", operadora: {nome: "Oi", codigo: 14, categoria: "Celular"}, data: new Date()},
-				{nome: uppercaseFilter("Ana"), telefone: "99997777", operadora: {nome: "Vivo", codigo: 15, categoria: "Celular"}, data: new Date()},
-				{nome: "Maria", telefone: "99996666", operadora: {nome: "Tim", codigo: 41, categoria: "Celular"}, data: new Date()}
-			];
-			$scope.operadoras = [
-				{nome: "Oi", codigo: 14, categoria: "Celular", preco: 2},
-				{nome: "Vivo", codigo: 15, categoria: "Celular", preco: 1},
-				{nome: "Tim", codigo: 41, categoria: "Celular", preco: 3},
-				{nome: "GVT", codigo: 25, categoria: "Fixo", preco: 1},
-				{nome: "Embratel", codigo: 41, categoria: "Fixo", preco: 2}
-			];
+			$scope.contatos = [];
+			$scope.operadoras = [];
+
+			var urlContatos = "http://localhost:3412/contatos",
+				urlOperadoras = "http://localhost:3412/operadoras";
+
+			var carregarContatos = function () {
+				$http.get(urlContatos).success(function (data, status) {
+					$scope.contatos = data;
+				});
+			};
+
+			var carregarOperadoras = function () {
+				$http.get(urlOperadoras).success(function (data, status) {
+					$scope.operadoras = data;
+				});
+			};
+
 			$scope.cores = [
 				{nome: "Azul", valor: "blue"},
 				{nome: "Verde", valor: "green"},
 				{nome: "Vermelho", valor: "red"}
 			];
+
 			$scope.adicionarContato = function (contato) {
-				$scope.contatos.push(angular.copy(contato));
-				delete $scope.contato;
-				$scope.contatoForm.$setPristine();
+				contato.data = new Date();
+				$http.post(urlContatos, contato).success(function (data) {
+					delete $scope.contato;
+					$scope.contatoForm.$setPristine();
+					carregarContatos();
+				});
 			};
+
 			$scope.apagarContatos = function (contatos) {
 				$scope.contatos = contatos.filter(function (contato) {
 					if (!contato.selecionado) return contato;
 				});
 			};
+
 			$scope.isContatoSelecionado = function (contatos) {
 				return contatos.some(function (contato) {
 					return contato.selecionado;
 				});
 			};
+
 			$scope.ordernarPor = function (campo) {
 				$scope.criterioDeOrdenacao = campo;
 				$scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
 			};
+
+			carregarContatos();
+			carregarOperadoras();
 		});
 	</script>
 </head>
@@ -93,7 +109,7 @@
 				<td><input ng-model="contato.selecionado" type="checkbox"></td>
 				<td>{{contato.nome}}</td>
 				<td>{{contato.telefone}}</td>
-				<td>{{contato.operadora.nome | lowercase}}</td>
+				<td>{{contato.operadora.nome}}</td>
 				<td><div style="width: 20px; height: 20px;" ng-style="{'background-color': contato.cor.valor}"></div></td>
 				<td>{{contato.data | date:'dd/MM/yyyy HH:mm'}}</td>
 			</tr>
